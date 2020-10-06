@@ -1,0 +1,12 @@
+---
+title: "p8105_hw3_lw2883"
+author: "Leighanne Wang"
+date: "10/6/2020"
+output: github_document
+---
+
+```{r setup}
+library(tidyverse)
+library(p8105.datasets)
+```
+
