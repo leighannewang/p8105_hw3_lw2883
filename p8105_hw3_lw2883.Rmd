@@ -41,7 +41,7 @@ aisle_num =
     count(aisle) %>% 
     arrange(desc(n)) 
 ```
-There are **`r aisle_num %>% count()` aisles**. Most items are ordered from the **Fresh Vegetables, Fresh Fruits, and Packaged Vegetables Fruits aisles**.
+There are **`r aisle_num %>% count()` aisles**. Most items are ordered from the Fresh Vegetables, Fresh Fruits, and Packaged Vegetables Fruits aisles.
 
 
 *Plot showing number of items ordered in each aisle (only aisles with more than 10,000 items ordered)*
@@ -104,10 +104,23 @@ accel_df =
 
 This dataset contains data collected from an accelerometer of a 63 year old male with a BMI of 25 and congestive heart failure. Variables included in this dataset are week number, day (including day ID number and type of day), minute, and activity count for each minute of a day. There are **`r nrow(accel_df)` rows** and **`r ncol(accel_df)` columns**. 
 
+*Aggregate across minutes to create total activity over the day and create table to show totals*
+```{r, total_activity}
+accel_df %>% 
+  group_by(week, day) %>% 
+  summarize(
+    total_activity = sum(activity_counts)
+  ) %>%
+  pivot_wider(
+    names_from = day,
+    values_from = total_activity
+  ) 
+```
+**use factors to make day of the week in the right order**
 
 
-* aggregate across minutes to create total activity variable for each day > grouby (week then day or day id, then aggregate using mean or sum) + summarize // create table with 35 days with total activity count > make easier to read week number rows and day of the week across top // then describe any patterns
-potential problems > use factors to make day of the week in the right order
+Looking at the total activity over the days and weeks, we see that for the most part total activity count ranges from 300,000 to around 600,000. What is noticeable is that the last two weekends in the dataset have less total activity count than in previous weekends, especially Saturday which has significantly less activity count than any other day.
+
 * minute xaxis and activity count on yaxis // color to map day of week // scatterplot with geom_line to connect dots // describe patterns
 minute might be character which will turn into factor in graph > so make sure it's numeric
 
