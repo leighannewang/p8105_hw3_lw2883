@@ -105,8 +105,11 @@ accel_df =
 This dataset contains data collected from an accelerometer of a 63 year old male with a BMI of 25 and congestive heart failure. Variables included in this dataset are week number, day (including day ID number and type of day), minute, and activity count for each minute of a day. There are **`r nrow(accel_df)` rows** and **`r ncol(accel_df)` columns**. 
 
 *Aggregate across minutes to create total activity over the day and create table to show totals*
-```{r, total_activity}
+```{r, total_activity, message = FALSE}
 accel_df %>% 
+  mutate(
+    day = forcats::fct_relevel(day, c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
+    ) %>% 
   group_by(week, day) %>% 
   summarize(
     total_activity = sum(activity_counts)
@@ -114,15 +117,28 @@ accel_df %>%
   pivot_wider(
     names_from = day,
     values_from = total_activity
-  ) 
+  ) %>% view()
 ```
-**use factors to make day of the week in the right order**
+
+Looking at the total activity over the days and weeks, we see that for the most part total activity count ranges from 300,000 to around 600,000. What is noticeable is that the last two weekends in the dataset have less total activity count than in previous weekends, especially Saturday which has significantly less activity count than any other day with only 1440 total activity count.
 
 
-Looking at the total activity over the days and weeks, we see that for the most part total activity count ranges from 300,000 to around 600,000. What is noticeable is that the last two weekends in the dataset have less total activity count than in previous weekends, especially Saturday which has significantly less activity count than any other day.
+*Single-panel plot of 24 hour activity count from accelerometer data for each day*
+```{r, accel_plot}
+accel_df %>% 
+  mutate( day = forcats::fct_relevel(day, c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
+    ) %>%
+  ggplot(aes(x = minute, y = activity_counts, color = day)) +
+    geom_point(alpha = .7) +
+    geom_line() +
+    labs(
+      title = "24 Hour Accelerometer Activity",
+      x = "Minute of the Day",
+      y = "Activity Count"
+    )
+```
 
-* minute xaxis and activity count on yaxis // color to map day of week // scatterplot with geom_line to connect dots // describe patterns
-minute might be character which will turn into factor in graph > so make sure it's numeric
+This graph shows the accelermeter activity count across the 24 hours of a each day. Although it may be a little hard to see, this graph shows us that there is the least amount of activity count throughout the night which makes sense because they are most likely sleeping/resting during this period of time. Additionally, there seems to be a jump in activity count right before this period of low activity count during the night. Other periods of high activity can be seen during noon on Sundays.
 
 ## Problem 3
 * separate to create year, month, day varaibles // make judgement call to see if you think the obs are in reasonable units // count snowfall for most commonly obs values
