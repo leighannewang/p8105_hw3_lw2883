@@ -73,7 +73,7 @@ instacart %>%
 
 
 *Table showing the mean hour of the day at which Pink Lady Apples vs. Coffee Ice Cream are ordered on each day of the week*
-```{r, apples_icecream_table}
+```{r, apples_icecream_table, message = FALSE, collapse = TRUE}
 instacart %>% 
   filter(product_name %in% c("Pink Lady Apples", "Coffee Ice Cream")) %>%
   group_by(product_name, order_dow) %>% 
@@ -81,7 +81,8 @@ instacart %>%
   pivot_wider(
     names_from = order_dow,
     values_from = mean_hour
-  ) 
+  ) %>% 
+  knitr::kable()
 ```
 
 ## Problem 2
@@ -105,7 +106,7 @@ accel_df =
 This dataset contains data collected from an accelerometer of a 63 year old male with a BMI of 25 and congestive heart failure. Variables included in this dataset are week number, day (including day ID number and type of day), minute, and activity count for each minute of a day. There are **`r nrow(accel_df)` rows** and **`r ncol(accel_df)` columns**. 
 
 *Aggregate across minutes to create total activity over the day and create table to show totals*
-```{r, total_activity, message = FALSE}
+```{r, total_activity, message = FALSE, collapse = TRUE}
 accel_df %>% 
   mutate(
     day = forcats::fct_relevel(day, c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
@@ -117,7 +118,8 @@ accel_df %>%
   pivot_wider(
     names_from = day,
     values_from = total_activity
-  ) %>% view()
+  ) %>% 
+   knitr::kable()
 ```
 
 Looking at the total activity over the days and weeks, we see that for the most part total activity count ranges from 300,000 to around 600,000. What is noticeable is that the last two weekends in the dataset have less total activity count than in previous weekends, especially Saturday which has significantly less activity count than any other day with only 1440 total activity count.
@@ -141,6 +143,13 @@ accel_df %>%
 This graph shows the accelermeter activity count across the 24 hours of a each day. Although it may be a little hard to see, this graph shows us that there is the least amount of activity count throughout the night which makes sense because they are most likely sleeping/resting during this period of time. Additionally, there seems to be a jump in activity count right before this period of low activity count during the night. Other periods of high activity can be seen during noon on Sundays.
 
 ## Problem 3
+
+*Load the NY NOAA dataset and describe the dataset*
+```{r, ny_noaa}
+data("ny_noaa")
+```
+This dataset shows the information from NOAA for the state of New York from January 1, 1981 through December 31, 2010. There are **`r nrow(ny_noaa)` observations** and **`r ncol(ny_noaa)` variables**. It contains the variables: ID which corresponds to the different weather stations, date of observation, precipitation (tenths of mm), snowfall (mm), snow depth (mm), maximum temperature (tenths of C) and minimum temperature (tenths of C). 
+
 * separate to create year, month, day varaibles // make judgement call to see if you think the obs are in reasonable units // count snowfall for most commonly obs values
 * data manipulation then plotting step > 2 panel one for Jan and one for Jul // organize data: groupby (station, year, and month) and summarize (average max temperature) // filter to get Jan + Jul either before or after groupby + summarize // plotting: average max temp for jan 1981,82,83.. (over years) for each station (use facet to get 2 panel) // structure: does it get warmer? are some stations always colder? 
 * 2 panel plot > since they're completely different make 2 different plots then patchwork //contour plot, bin plot, hex plot for first plot // for second plot: filter then use distribution plot (boxplot, violin, ridge) 
