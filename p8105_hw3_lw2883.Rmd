@@ -150,8 +150,45 @@ data("ny_noaa")
 ```
 This dataset shows the information from NOAA for the state of New York from January 1, 1981 through December 31, 2010. There are **`r nrow(ny_noaa)` observations** and **`r ncol(ny_noaa)` variables**. It contains the variables: ID which corresponds to the different weather stations, date of observation, precipitation (tenths of mm), snowfall (mm), snow depth (mm), maximum temperature (tenths of C) and minimum temperature (tenths of C). 
 
-* separate to create year, month, day varaibles // make judgement call to see if you think the obs are in reasonable units // count snowfall for most commonly obs values
-* data manipulation then plotting step > 2 panel one for Jan and one for Jul // organize data: groupby (station, year, and month) and summarize (average max temperature) // filter to get Jan + Jul either before or after groupby + summarize // plotting: average max temp for jan 1981,82,83.. (over years) for each station (use facet to get 2 panel) // structure: does it get warmer? are some stations always colder? 
+*Clean data: separate variables for year, month, day; give reasonable units for variables.*
+```{r, clean_data}
+clean_ny_noaa =   
+  ny_noaa %>% 
+  separate(date, sep = "-", into = c("year", "month", "day")) %>% 
+  mutate(
+    prcp = (prcp / 10), # convert units to mm
+    tmin = as.integer(tmin) / 10, # convert units to C
+    tmax = as.integer(tmax) / 10 # convert units to C
+  )
+```
+
+*Most commonly observed values for snowfall*
+```{r snowfall}
+snowfall =    
+  clean_ny_noaa %>% 
+    count(snow) %>% 
+    arrange(desc(n)) 
+```
+
+This dataset now has precipitation converted to mm and the maximum and minimum temperature variables are converted to degrees C. The most commonly observed snowfall values are 0 because this dataset contains observations throughout the entire year and New York State only experiences snow in the winter. Next we have "NA" or missing values as the next most common because 
+
+*Two-panel plot showing average max temperature in January and July in each station across years*
+```{r, jan_jul_plot, message = FALSE, warning = FALSE}
+clean_ny_noaa %>% 
+  group_by(id, year, month) %>% 
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE)
+  ) %>% 
+  filter(month %in% c("01", "07")) %>% 
+  ggplot(aes(x = year, y = mean_tmax, color = month)) +
+  geom_point(alpha = .5) +
+  facet_grid(. ~ month) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+
+```
+The dots represent each station's recorded mean maximum temperature throughout the years from 1981 to 2010. As we can see from the plots, the month of January has much lower mean temperatures compared to the July. Overall, the mean maximum temperatures seem to be very consistent over the 30 year period. Winter temperatures have a wider range of mean values than compared to the summer temperatures.
+
+
 * 2 panel plot > since they're completely different make 2 different plots then patchwork //contour plot, bin plot, hex plot for first plot // for second plot: filter then use distribution plot (boxplot, violin, ridge) 
 
 
