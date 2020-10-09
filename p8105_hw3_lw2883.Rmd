@@ -9,6 +9,7 @@ output: github_document
 library(tidyverse)
 library(haven)
 library(p8105.datasets)
+library(patchwork)
 
 knitr::opts_chunk$set(
 	fig.width = 6, 
@@ -186,11 +187,38 @@ clean_ny_noaa %>%
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 
 ```
+
 The dots represent each station's recorded mean maximum temperature throughout the years from 1981 to 2010. As we can see from the plots, the month of January has much lower mean temperatures compared to the July. Overall, the mean maximum temperatures seem to be very consistent over the 30 year period. Winter temperatures have a wider range of mean values than compared to the summer temperatures.
 
+*Two-panel plot showing tmax vs tmin for full dataset and distribution of snowfall values greater than 0 and less than 100 by year*
+```{r, patchwork_plot, collapse = TRUE, warning = FALSE, message = FALSE}
+tmax_tmin =
+  clean_ny_noaa %>% 
+  ggplot(aes(x = tmax, y = tmin)) +
+  geom_density2d() +
+    labs(
+      title = "Maximum vs Minimum Temperatures in NYS",
+      x = "Maximum Temperature",
+      y = "Minimum Temperature"
+    )
 
-* 2 panel plot > since they're completely different make 2 different plots then patchwork //contour plot, bin plot, hex plot for first plot // for second plot: filter then use distribution plot (boxplot, violin, ridge) 
+distr_snowfall = 
+  clean_ny_noaa %>% 
+  filter(snow > 0, snow < 100) %>% 
+  ggplot(aes(x = year, y = snow)) +
+  geom_boxplot() +
+    labs(
+      title = "Distribution of Snowfall (0-100mm) by Year",
+      x = "Year",
+      y = "Snowfall"
+    ) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+  
+tmax_tmin / distr_snowfall
+```
 
+This plot on the top shows the maximum vs. minimum temperatures of all the stations throughout the full time period. As we can see, the highest density areas are around when both the minimum and maximum temperatures are around 0 degrees Celsius and around 20-30 degrees Celsius.
 
+The bottom plot shows us the distribution of snowfall values greater than 0 and less than 100mm by year. Based on the boxplots for each year we can see that the distribution of snowfall seems to be very stable throughout this entire time period, the median snowfall for this plot is 25mm. 
 
 
