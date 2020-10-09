@@ -181,14 +181,16 @@ clean_ny_noaa %>%
     mean_tmax = mean(tmax, na.rm = TRUE)
   ) %>% 
   filter(month %in% c("01", "07")) %>% 
-  ggplot(aes(x = year, y = mean_tmax, color = month)) +
+  ggplot(aes(x = year, y = mean_tmax, group = id, color = id)) +
   geom_point(alpha = .5) +
+  geom_path() +
   facet_grid(. ~ month) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+        legend.position = "none")
 
 ```
 
-The dots represent each station's recorded mean maximum temperature throughout the years from 1981 to 2010. As we can see from the plots, the month of January has much lower mean temperatures compared to the July. Overall, the mean maximum temperatures seem to be very consistent over the 30 year period. Winter temperatures have a wider range of mean values than compared to the summer temperatures.
+The graph shows each station's recorded mean maximum temperature throughout the years from 1981 to 2010. As we can see from the plots, the month of January has much lower mean temperatures (ranging from about -15 to 10 degrees C) compared to the July (ranging from about 20 to 30 degrees C with some outliers). Overall, the mean maximum temperatures seem to be very consistent over the 30 year period. Winter temperatures have a wider range of mean values than compared to the summer temperatures.
 
 *Two-panel plot showing tmax vs tmin for full dataset and distribution of snowfall values greater than 0 and less than 100 by year*
 ```{r, patchwork_plot, collapse = TRUE, warning = FALSE, message = FALSE}
